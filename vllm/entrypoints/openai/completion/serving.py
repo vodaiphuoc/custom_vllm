@@ -224,6 +224,8 @@ class OpenAIServingCompletion(OpenAIServing):
                         resumable=request.resumable
                     )
 
+                    print('engine_request: ', engine_request)
+
                     generator = self.engine_client.generate(
                         engine_request,
                         sampling_params,
