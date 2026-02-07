@@ -1040,7 +1040,7 @@ class EngineCoreProc(EngineCore):
         if request_type == EngineCoreRequestType.ADD:
             req, request_wave = request
 
-            logger.info("Calling add request %s in EngineCoreProc", str(req))
+            logger.info("Calling add request %s in EngineCoreProc", str(req.request_id))
             self.add_request(req, request_wave)
         elif request_type == EngineCoreRequestType.ABORT:
             self.abort_requests(request)
