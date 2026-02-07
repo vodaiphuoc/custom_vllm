@@ -9,6 +9,7 @@ from argparse import Namespace
 from collections.abc import Awaitable
 from contextlib import asynccontextmanager
 from http import HTTPStatus
+import os
 
 import pydantic
 from fastapi import FastAPI, HTTPException, Request
@@ -25,6 +26,8 @@ from vllm.entrypoints.utils import sanitize_message
 from vllm.exceptions import VLLMValidationError
 from vllm.logger import init_logger
 from vllm.utils.gc_utils import freeze_gc_heap
+
+import ngrok
 
 logger = init_logger("vllm.entrypoints.openai.server_utils")
 
@@ -372,8 +375,19 @@ async def lifespan(app: FastAPI):
         # Mark the startup heap as static so that it's ignored by GC.
         # Reduces pause times of oldest generation collections.
         freeze_gc_heap()
+        ngrok_token = os.environ.get('NGROK_AUTH_TOKEN',None)
+        deploy_domain = os.environ.get('DEPLOY_DOMAIN',None)
         try:
+            if ngrok_token and deploy_domain:
+                ngrok.set_auth_token(ngrok_token)
+                ngrok.forward(
+                    addr = app.state.args.host + ':' + str(app.state.args.port),
+                    proto = "http",
+                    domain = deploy_domain
+                )
             yield
+            if ngrok_token and deploy_domain:
+                ngrok.disconnect()
         finally:
             if task is not None:
                 task.cancel()
