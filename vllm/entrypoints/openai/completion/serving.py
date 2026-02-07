@@ -221,7 +221,10 @@ class OpenAIServingCompletion(OpenAIServing):
                         trace_headers=trace_headers,
                         priority=request.priority,
                         data_parallel_rank=data_parallel_rank,
+                        resumable=request.resumable
                     )
+
+                    print('engine_request: ', engine_request)
 
                     generator = self.engine_client.generate(
                         engine_request,

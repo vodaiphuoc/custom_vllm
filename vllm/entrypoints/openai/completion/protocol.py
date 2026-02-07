@@ -60,6 +60,7 @@ class CompletionRequest(OpenAIBaseModel):
     temperature: float | None = None
     top_p: float | None = None
     user: str | None = None
+    resumable: bool = False
 
     # --8<-- [start:completion-sampling-params]
     use_beam_search: bool = False
